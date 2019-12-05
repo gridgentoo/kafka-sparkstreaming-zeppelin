@@ -2,9 +2,7 @@
 ![GitHub](https://img.shields.io/badge/Version-0.0.1-lightgrey.svg)
 ![GitHub](https://img.shields.io/badge/License-MIT-blue.svg)
 
-
-# One Click Deploy: Kafka Spark Streaming with Zeppelin UI
-# Развертывание в один клик: Kafka Spark Streaming с пользовательским интерфейсом Zeppelin UI
+# Развертывание в один клик: Kafka Spark Streaming с пользовательским интерфейсом Zeppelin UI и мониторинг (Grafana + Kafka Manager)
 
 Этот репозиторий содержит Docker-compose стек с Kafka и Spark Streaming, а также мониторинг с Kafka Manager и Grafana Dashboard. Сеть настроена так, что Kafka brokers  могут быть доступны с хоста.
 
@@ -55,13 +53,13 @@
 docker-compose up -d
 ```
 
-This will run deattached. If you want to see the logs, you can run:
+Если вы хотите увидеть логи, вы можете запустить:
 
 ```
 docker-compose logs -f -t --tail=10
 ```
 
-To see the memory and CPU usage (which comes in handy to ensure docker has enough memory) use:
+Чтобы увидеть использование memory и CPU  (что удобно для того, чтобы убедиться, что у докера достаточно памяти), используйте:
 
 ```
 docker stats
@@ -69,7 +67,8 @@ docker stats
 
 ## Accessing the notebook
 
-You can access the default notebook by going to http://172.25.0.19:8080/#/notebook/2EAB941ZD. Now we can start running the cells.
+Вы можете получить доступ к notebook по умолчанию, перейдя по адресу http://172.25.0.19:8080/#/notebook/2EAB941ZD. 
+Теперь мы можем запустить cells.
 
 ### 1) Setup
 
@@ -79,7 +78,7 @@ You can access the default notebook by going to http://172.25.0.19:8080/#/notebo
 
 ### 2) Producer
 
-We have an interpreter called %producer.pyspark that we'll be able to run in parallel.
+Вы можете вызвать %producer.pyspark interpreter, который мы сможем запустить параллельно.
 
 #### Load our example dummy dataset
 
@@ -89,27 +88,27 @@ We have made available a 1000-row version of the [US Census adult income predict
 
 #### Start the stream of rows
 
-We now take one row at random, and send it using our python-kafka producer. The topic will be created automatically if it doesn't exist (given that `auto.create.topics.enable` is set to true).
+Теперь мы берем одну строку случайным образом row at random и отправляем ее с помощью нашего python-kafka producer. Тема будет создана автоматически, если она не существует (учитывая, что `auto.create.topics.enable` имеет значение true).
 
 ![](images/zeppelin-3.jpg)
 
 ### 3) Consumer
 
-We now use the %consumer.pyspark interpreter to run our pyspark job in parallel to the producer.
+Вы можете использовать %consumer.pyspark, который мы сможет запустить pyspark job параллельно с producer.
 
 #### Connect to the stream and print
 
-Now we can run the spark stream job to connect to the topic and listen to data. The job will listen for windows of 2 seconds and will print the ID and "label" for all the rows within that window.
+Теперь мы можем запустить задание spark stream, чтобы подключиться к  topic и прослушать данные listen to dat. Job будет прослушивать окна в течение 2 секунд и напечатает ID and "label" для всех строк в этом окне
 
 ![](images/zeppelin-4.jpg)
 
 ### 4) Monitor Kafka
 
-We can now use the kafka manager to dive into the current kafka setup.
+Теперь мы можем использовать менеджер kafka manager, чтобы погрузиться в текущую настройку kafka.
 
 #### Setup Kafka Manager
 
-To set up kafka manager we need to configure it. In order to do this, access http://172.25.0.14:9000/addCluster and fill up the following two fields:
+Для настройки kafka manager нам нужно его настроить. Для этого зайдите на http://172.25.0.14:9000/addCluster и заполните следующие два поля:
 
 * Cluster name: Kafka
 * Zookeeper hosts: 172.25.0.11:2181
@@ -121,13 +120,13 @@ Optionally:
 
 #### Access the topic information
 
-If your cluster was named "Kafka", then you can go to http://172.25.0.14:9000/clusters/Kafka/topics/default_topic, where you will be able to see the partition offsets. Given that the topic was created automatically, it will have only 1 partition.
+Если ваш кластер был назван «Kafka», то вы можете перейти по адресу http://172.25.0.14:9000/clusters/Kafka/topics/default_topic, где вы сможете увидеть смещения раздела partition offsets. Учитывая, что тема была создана автоматически, она будет иметь только 1 partition.
 
 ![](images/zeppelin-4.jpg)
 
 #### Визуализируйте метрики в Grafana
 
-Finally, you can access the default kafka dashboard in Grafana (username is "admin" and password is "password") by going to http://172.25.0.16:3000/d/xyAGlzgWz/kafka?orgId=1
+Наконец, вы можете получить доступ к панели инструментов kafka dashboard в Grafana (имя пользователя - «admin», а пароль - «пароль»), перейдя в http://172.25.0.16:3000/d/xyAGlzgWz/kafka?orgId=1
 
 ![](images/grafanakafka.jpg)
 
